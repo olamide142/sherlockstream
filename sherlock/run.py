@@ -3,7 +3,7 @@ import sys
 import os
 from enum import Enum
 import random
-
+import logging
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
@@ -23,13 +23,14 @@ class State(Enum):
 class SocketManager:
 
     @socketio.on('connect')
-    def test_connect():
-        print(1)
+    def connect():
+        print("Some one connected")
+        #while True:
         emit('my response', {'data': f"{random.randint(100, 200)}"})
 
-    @socketio.on('my event')
-    def handle_my_custom_event(json):
-        print('received json: ' + str(json))
+    @socketio.event
+    def disconnect():
+        print("Some one disconnected")
 
 
 class StreamManager():

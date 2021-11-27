@@ -7,7 +7,7 @@ from tkinter import messagebox as mb
 from tkinter.filedialog import askopenfilename
 from collections import namedtuple
 
-
+import pdb; pdb.set_trace()
 Student = namedtuple('Student', ['row', 'name', 'admission_number', 'age', 'scores', 'psychomotors', 'remarks'])
 students = []
 headers = ""

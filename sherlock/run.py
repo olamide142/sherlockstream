@@ -2,15 +2,14 @@ import pdb
 import sys
 import subprocess
 import os
+import io
 from enum import Enum
 import random
 from uuid import uuid4
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-
 from werkzeug.debug import tbtools
-
 
 
 app = Flask(__name__)
@@ -19,11 +18,31 @@ socketio = SocketIO(app)
 app.config['SECRET_KEY'] = 'secret'
 
 
+
+class State(Enum):
+    ERROR = 1
+
+    def __call__(self):
+        pdb.set_trace()
+
+
 class Box():
+    """ Child process running users script"""
     
     def __init__(self, executable=None):
         self.id = uuid4()
-        self.executable = sys.executable
+        self.executable = executable if executable else sys.executable
+        self.args = []
+        self._process = None
+
+
+    def start(self):
+        """ Kick off the """
+        args = [self.executable, '-m', 'pdb', 'sherlock/sample.py']
+        child_process = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        output = io.BytesIO(child_process.communicate()[0]).readlines()
+        for i in output:
+            print(i.decode())
 
 
 class FileSystem(Box):
@@ -34,14 +53,9 @@ class FileSystem(Box):
         self.name = name 
 
 
-class State(Enum):
-    ERROR = 1
-
-    def __call__(self):
-        pdb.set_trace()
-
-
-class SocketManager:
+class SocketManager():
+    """ Manage all incoming and outgoing request
+        of process execution in real time """
 
     @socketio.on('connect')
     def connect():
@@ -81,12 +95,12 @@ class CodeInspector(StreamManager):
 @app.route("/")
 def main():
     streams = StreamManager.streams
-    # Trigger the debugger
-    a = 's'+1
+    a = 's'+1 # Trigger the debugger
     return render_template('index.html')
-
 
 
 if __name__ == '__main__':
     manager = StreamManager('') #sys.argv[1])
+    box = Box('venv/bin/python')
+    box.start()
     socketio.run(app, debug=True)

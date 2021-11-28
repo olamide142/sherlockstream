@@ -1,224 +1,128 @@
-import os
-import re
-import sys
-from pprint import pprint
-from tkinter import Tk
-from tkinter import messagebox as mb
-from tkinter.filedialog import askopenfilename
-from collections import namedtuple
+from __future__ import annotations
 
-Student = namedtuple('Student', ['row', 'name', 'admission_number', 'age', 'scores', 'psychomotors', 'remarks'])
-students = []
-headers = ""
-row_num = 0
-others =  list(map(str.lower, iter(['Punctuality', 'Attendance', 'Emmotional Stability', 'Neatness', 'Politeness',
-         'Honesty', 'Relationship with others', 'Self Control', 'Attitude to School work', 
-         'Handwriting', 'Games', 'Sports', 'Drawing and Painting', 'Crafts', 'Musical skills', 
-         'Days Present', 'Days Absent'])))
-filename = None
+from typing import Generic, TypeVar
+
+T = TypeVar("T")
 
 
-def show_message(msg: str):
-    """Show error message"""
-    
-    mb.showerror("Error", msg)
-    sys.exit(0)
+class Node(Generic[T]):
+    def __init__(self, data: T):
+        self.data = data  # Assign data
+        self.next: Node[T] | None = None  # Initialize next as null
+        self.prev: Node[T] | None = None  # Initialize prev as null
 
 
-def validate_score(val: str):
-    """Check score is either "N,N" or "int,int" """
-    
-    try:
-        x, y = val.split(",")
-
-        if int(x)+ int(y) >= 0 or  x == "N" and y == "N":
-            return True, f"{x},{y}"
-        else:
-            return False, None
-        if len(x) == 2:
-
-            if (x[0] =="N") and (x[1] == "N"): 
-                print('hit me')
-                p, q = "N", "N"
-                # remove one from the length of subjects
-                global num_of_sub_reg
-                num_of_sub_reg -= 1
-            else:
-                p, q = int(x[0]), int(x[1])
-            return True, f"{p},{q}"
-            if val == "0,0":
-                return True, "0,0"
-            elif val.strip == "N,N":
-                x = val.split(",")
-                return True, "N,N"
-
-            elif len(val) < 5:
-                return False, None
-            else:
-                if all(list(map(lambda x: int(x)*0 == 0, iter(val.strip().split(","))))):
-                    return True, ",".join([str(int(val.split(",")[0])), str(int(val.split(",")[1]))])    
-        else:
-            print(val)
-            show_message(f"Review the Scores in all subjects on liiiiiiine {row_num}")
-
-
-
-    except ValueError:
-        return False, None
-
-
-def get_file():
-    """Get file name"""
-
-    Tk().withdraw()
-    global filename
-    filename = askopenfilename() 
-
-    if not str(filename).endswith(".csv"):
-       show_message("You can only verify csv files \n Try a csv file (GTA examination format).")
-
-    return filename
-
-
-def read_lines(filename: str):
-
-    """Yield a new line excluding 
-    the first line column description
+class Stack(Generic[T]):
+    """
+    >>> stack = Stack()
+    >>> stack.is_empty()
+    True
+    >>> stack.print_stack()
+    stack elements are:
+    >>> for i in range(4):
+    ...     stack.push(i)
+    ...
+    >>> stack.is_empty()
+    False
+    >>> stack.print_stack()
+    stack elements are:
+    3->2->1->0->
+    >>> stack.top()
+    3
+    >>> len(stack)
+    4
+    >>> stack.pop()
+    3
+    >>> stack.print_stack()
+    stack elements are:
+    2->1->0->
     """
 
-    with open(filename, "r") as f:
-        for _,i in enumerate(f.readlines()):
-            
-            if _ == 0: 
-                global headers
-                headers = list(map(str.strip, iter(i.split(",")))) 
-                headers = list(map(str.lower, headers))
+    def __init__(self) -> None:
+        self.head: Node[T] | None = None
 
-            else:
-                global row_num
-                row_num = _+1
-                yield i
+    def push(self, data: T) -> None:
+        """add a Node to the stack"""
+        if self.head is None:
+            self.head = Node(data)
+        else:
+            new_node = Node(data)
+            self.head.prev = new_node
+            new_node.next = self.head
+            new_node.prev = None
+            self.head = new_node
 
+    def pop(self) -> T | None:
+        """pop the top element off the stack"""
+        if self.head is None:
+            return None
+        else:
+            assert self.head is not None
+            temp = self.head.data
+            self.head = self.head.next
+            if self.head is not None:
+                self.head.prev = None
+            return temp
 
+    def top(self) -> T | None:
+        """return the top element of the stack"""
+        return self.head.data if self.head is not None else None
 
-def get_remarks(line):
+    def __len__(self) -> int:
+        temp = self.head
+        count = 0
+        while temp is not None:
+            count += 1
+            temp = temp.next
+        return count
 
-    for j,i in enumerate(reversed(line.split(","))):
-        try:
-            if type(int(i)) == type(1):
-                remarks = line.split(",")[-j::]
-                if type(int(remarks[0])) == type(1):
-                    remarks.pop(0)
-                remarks = ",".join(remarks).strip()
-                break
-        except ValueError:
-            continue
-    return remarks or show_message(f"Review the Admission Number on line {row_num}")  
+    def is_empty(self) -> bool:
+        return self.head is None
 
-
-
-def get_psychomotors(line):
-    ll = line.split(",")
-    psychomotors = []
-    y = 0
-    for j,i in enumerate(reversed(line.split(","))):
-        try:
-            if type(int(i)) == type(1):
-                x = len(line.split(",")[-j:])
-
-                a = ll[-(len(others)+x):-x]
-                if len(a) == len(others):
-                    return [int(i) for i in ll[-(len(others)+x):-x]]
-
-        except ValueError: 
-            y += 1
-            continue
-
-
-def validate_values(line: str):
-
-    """ Check each data type is correct"""
-
-    global headers
-    global others
-    global subjects
-    global num_of_sub_reg
-
-    subjects = headers[3: headers.index(others[0].lower())]
-    num_of_sub_reg = len(subjects)
-    
-    name = line.split(",")[0].strip()
-    if len(name.split(" ")) < 2:
-        show_message(f"Name can't be less than two words\nError on row number: {row_num}")  
-
-    admission_number = line.split(",")[1].strip()
-    if admission_number[0:4] and len(admission_number) == 10:
-        try:
-            if int(admission_number.split("/")[1]) * 0 == 0 and\
-                int(admission_number.split("/")[2]) * 0 == 0: ...
-        except ValueError:
-            show_message(f"Review the Admission Number on line {row_num}")  
-
-    else:
-        show_message(f"Review the Admission Number on line {row_num}")  
-
-    age = line.split(",")[2].strip()
-    for i in age:
-        try:
-            if int(age)*0 == 0 and int(age) > 0: ...
-            else: show_message(f"Review the Age Number on line {row_num}")
-        except ValueError:
-            show_message(f"Review the Age Number on line {row_num}")
-
-    #Exam scores
-    # print(line.split("\"")[1:])
-    # temp = list(filter(lambda x: validate_score(x)[0], iter(line.split("\"")[1:])))
-    # temp = temp[0:len(subjects)]
-    # if len(scores) > len(subjects): print(111)
-    scores = []
-    # sys.exit()
-    # for i in temp[0:len(subjects)]: 
-    #     a = i.split(",")
-    #     scores.append(f"{int(a[0])},{int(a[1])}")
-
-    # if len(scores) != num_of_sub_reg:
-    #     print(len(scores) , len(subjects))
-    #     print(subjects)
-    #     show_message(f"Review the Scoressss in all subjects on line {row_num}")
-
-    
-    remarks = get_remarks(line)
-
-    psychomotors = get_psychomotors(line)
-
-    students.append(Student(row_num, name, admission_number, age, scores, psychomotors, remarks))
-
-    
-def to_csv(x):
-    return ""
-    s = f"{x.name}, {x.admission_number}, {x.age},"
-    for i in x.scores:
-        s += f"\"{i}\","
-    for i in x.psychomotors:
-        s += f"{i},"
-    s += x.remarks
-    return s
+    def print_stack(self) -> None:
+        print("stack elements are:")
+        temp = self.head
+        while temp is not None:
+            print(temp.data, end="->")
+            temp = temp.next
 
 
+# Code execution starts here
 if __name__ == "__main__":
 
-    for i in read_lines(get_file()):
-        validate_values(i)
-    subjects = headers[3: headers.index(others[0].lower())]
-    # mb.showinfo("Info", "Your file is ready to upload")
-    with open(f"{filename[0:-4]}_Verified.csv", 'w+') as f:
-        f.writelines(str(" ,".join(headers))[0:-1]+"\n")
-        for j,i in enumerate(students):
-            if j == len(students)-1:
-                f.writelines(to_csv(i))
-            else:
-                f.writelines(to_csv(i)+"\n")
+    # Start with the empty stack
+    stack: Stack[int] = Stack()
 
-    # for i in students:
+    # Insert 4 at the beginning. So stack becomes 4->None
+    print("Stack operations using Doubly LinkedList")
+    stack.push(4)
 
-    sys.exit(0)
+    # Insert 5 at the beginning. So stack becomes 4->5->None
+    stack.push(5)
+
+    # Insert 6 at the beginning. So stack becomes 4->5->6->None
+    stack.push(6)
+
+    # Insert 7 at the beginning. So stack becomes 4->5->6->7->None
+    stack.push(7)
+
+    # Print the stack
+    stack.print_stack()
+
+    # Print the top element
+    print("\nTop element is ", stack.top())
+
+    # Print the stack size
+    print("Size of the stack is ", len(stack))
+
+    # pop the top element
+    stack.pop()
+
+    # pop the top element
+    stack.pop()
+
+    # two elements have now been popped off
+    stack.print_stack()
+
+    # Print True if the stack is empty else False
+    print("\nstack is empty:", stack.is_empty())

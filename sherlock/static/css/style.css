@@ -1,4 +1,33 @@
 body {
-    background-color: lightblue;
-    font-family: 'monospace';
+    /* color: #38AECC;
+    background-color: #183446; */
   }
+p {
+    font-family: 'monospace';
+    font-size: 10px;
+}
+
+
+.split {
+  height: 80%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 20;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.left {
+  left: 0;
+  background-color: #4B7793;
+}
+
+.right {
+  right: 0;
+  background-color: #D3D0CB;
+}
+
+.color_1 {
+  background-color: #838D92;
+}

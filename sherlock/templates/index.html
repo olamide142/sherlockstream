@@ -3,19 +3,32 @@
 
 <head>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
     <title>Sherlock Stream</title>
 </head>
 
-<body>
+<body class="w3-gray w3-container">
 
-    <h4 class="log">Sherlock Stream</h4>
-    <div id="log"></div>
-    
+    <h4 class="w3-center">Sherlock Stream</h4>
+    <button class="w3-white w3-small w3-round w3-margin" id="start_btn">Start</button>
+
+    <div class="split left">
+        <h2>1</h2>
+        <div class="w3-padding" id="log"></div>
+    </div>
+
+    <div class="split right">
+        <h2>2</h2>
+    </div>
 
 </body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="/static/js/index.js"></script>
 
 <script type="text/javascript" charset="utf-8">

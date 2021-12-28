@@ -10,9 +10,9 @@ $(document).ready(function(){
         if (data_received.length >= 100){
             data_received.shift()
         }
-
-        var temp = msg.data.split("\r\n")
-         for (var j = 0; j< temp.length; j++){
+        console.log(msg)
+        var temp = msg.last_output.split("\r\n")
+         for (var j = 0; j < temp.length; j++){
             var data_string = '<p>' + temp[j] + '</p>';
             $('#log').append(data_string);
         }

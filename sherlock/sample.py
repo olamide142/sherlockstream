@@ -1,3 +1,10 @@
+import inspect
+from box import Box
+
+for i in [1,2,
+            34,4]:
+    print(i)
+
 class Tree:
     def __init__(self, val = None):
         if val != None:
@@ -36,5 +43,10 @@ tree.insert(19)
 tree.insert(24)
 tree.insert(5)
 tree.insert(21)
+a = "victor ".strip()\
+    .split()
+b = inspect.isclass(Box)
+print(a, 111111111111111111111111111)
+print(b, 111111111111111111111111111)
 
 tree.printValues()

@@ -38,7 +38,7 @@ class Stack(object):
     def __init__(self):
         self.stack = []
 
-    def insert(self, val):
+    def push(self, val):
         self.stack.append(val)
 
     def size(self):

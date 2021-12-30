@@ -14,9 +14,14 @@ class CodeInspector():
         if self.last_output is None:
             self.last_input = u"\r\nn"
             return self.last_input
+        if "ExceptionPexpect" in self.last_output.lower():
+            return u"\r\nn"
         else:
             return u"\r\nn"
 
     def get_recent_io(self):
-        return {'last_output': self.last_output, 'last_input': self.last_input}
+        temp = str(self.last_output).splitlines()#+self.last_input.strip()
+        temp[-1] = temp[-1] + str(self.last_input.strip())
+
+        return {'last_output': "\r\n".join(temp), 'last_input': self.last_input}
 

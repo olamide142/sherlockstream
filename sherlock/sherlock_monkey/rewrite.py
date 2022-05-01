@@ -1,44 +1,47 @@
-from ast import *
+import ast
 
 from sherlock_data.data import Line
 
-class RewriteBase(NodeTransformer):
+class Transformer:
 
-    def __init__(self) -> None:
+    def __init__(self, file) -> None:
+        self._starterFile = file
         super().__init__()
+    
 
-    def generic_visit(self, node):
-        """ all files changed will have sauce_code visibility"""
-        # breakpoint()
-        if not isinstance(node, Module):
-            return node
-        print('+++++++++')
-        val = fix_missing_locations(ImportFrom(
-            module='sherlock_monkey.sauce_code',
-            names=[alias(name='*', asname=None)],
-            level=0)
-        )
-        node.body  = list([val] + node.body)
+    def traverse(self, node):
+        for i in ast.walk(node):
+            if isinstance(i, ast.FunctionDef):
+                i = self._visitFunctionDef(i)
+            if isinstance(i, ast.Module):
+                i = self._visitModule(i)
+
         return node
 
 
-class RewriteFunctionDef(RewriteBase):
-
-    def __init__(self, file):
-        self.file = file
-        super().__init__()
-
-    def visit_FunctionDef(self, node):
-        print('----------')
-        self._visit(node)
-        val = fix_missing_locations(Expr(
-                value=Call(
-                    func=Name(id="functionCal led", ctx=Load()),
+    def _visitFunctionDef(self, node):
+        """ include at the start of a function exec  """
+        val = ast.fix_missing_locations(ast.Expr(
+                value=ast.Call(
+                    func=ast.Name(id="functionCalled", ctx=ast.Load()),
                     args=[],
-                    keywords=[keyword(arg='name',value=Constant(value=node.name, ctx=Load(), kind=None)),
-                            keyword(arg='line',value=Constant(value=Line().parse(node, self.file), ctx=Load(), kind=None))
+                    keywords=[ast.keyword(arg='name',value=ast.Constant(value=node.name, ctx=ast.Load(), kind=None)),
+                            ast.keyword(arg='line',value=ast.Constant(value=Line().parse(node, self._starterFile), 
+                                ctx=ast.Load(), kind=None))
                     ],
                 )
             ))
         node.body  = list([val] + node.body)
+        return node
+
+
+    def _visitModule(self, node):
+        """ all files changed will have sauce_code visibility"""
+        val = ast.fix_missing_locations(ast.ImportFrom(
+            module='sherlock_monkey.sauce_code',
+            names=[ast.alias(name='*', asname=None)],
+            level=0)
+        )
+        node.body  = list([val] + node.body)
+
         return node

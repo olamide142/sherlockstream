@@ -1,4 +1,8 @@
+from sherlock_monkey.sauce_code import *
+
+
 class Tree:
+
     def __init__(self, val=None):
         if val != None:
             self.val = val
@@ -37,5 +41,4 @@ tree.insert(19)
 tree.insert(24)
 tree.insert(5)
 tree.insert(21)
-
 tree.printValues()

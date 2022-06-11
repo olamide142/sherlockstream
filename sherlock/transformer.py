@@ -1,20 +1,20 @@
+'''Transform/Modiify a python ast node'''
 import ast
-
-from sherlock_data.data import Line
+from sherlock.sherlock_data.code_data import Line
 
 class Transformer:
 
-    def __init__(self, file) -> None:
+    def __init__(self, file):
         self._starterFile = file
         super().__init__()
-    
 
     def traverse(self, node):
         for i in ast.walk(node):
             if isinstance(i, ast.FunctionDef):
                 i = self._visitFunctionDef(i)
             if isinstance(i, ast.Module):
-                i = self._visitModule(i)
+                # i = self._visitModule(i)
+                pass
 
         return node
 

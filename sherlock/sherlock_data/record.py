@@ -1,4 +1,4 @@
-from sherlock_data.data import Id
+from sherlock.sherlock_data.code_data import Id
 
 class Recorder(object):
     _instance = None

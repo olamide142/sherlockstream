@@ -3,21 +3,21 @@ import uuid
 from pathlib import Path
 from typing import Optional
 
-from sherlock_data.common import mapThenList
+from sherlock.sherlock_data.common import mapThenList
 
 
 class Id:
-    def __init__(self) -> None:
+    def __init__(self):
         self._id = str(uuid.uuid4())
 
     def __repr__(self):
         return str(self._id)
 
 class File:
-    def __init__(self, fileName: Path) -> None:
+    def __init__(self, fileName: Path):
         self.fileName = fileName
     
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f'[File::{self.fileName}'
         
 class Line:
@@ -38,7 +38,7 @@ class Line:
         self.file = file
         return self.__repr__()
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return "::".join(mapThenList([
             self.file,
             self.lineNumber,

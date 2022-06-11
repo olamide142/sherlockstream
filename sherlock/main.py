@@ -36,6 +36,7 @@ def getFullpath(entryFile):
 
     if not entryFile.startswith(currentDirectory):
         entryFile = os.path.join(currentDirectory, entryFile)
+    
     return entryFile
 
 
@@ -45,22 +46,25 @@ def main(entryFile):
     unparsedFiles = set() 
     unparsedFiles.add(entryFile)
 
-    while len(unparsedFiles):
+    while len(unparsedFiles) > 0:
         
         currentFile = unparsedFiles.pop()
-
         if currentFile not in parsedFiles:
+
             converter = CodeToAst(currentFile)
             currentAst = converter.convert()
-            transformer = Transformer(currentFile)
-            transformedAst = transformer.traverse(currentAst)
-            
-            parsedFiles = getPaths(currentAst, entryFile, parsedFiles)
+
+            # transformer = Transformer(currentFile)
+            # transformedAst = transformer.traverse(currentAst)
+           
+            unparsedFiles = getPaths(currentAst, unparsedFiles)
             parsedFiles.add(currentFile)
+    import pprint
+    pprint.pprint(parsedFiles)
+
+    breakpoint()
     return 0
 
 
 if __name__ == '__main__':
-    import pprint
-    pprint.pprint(sys.modules)
     raise SystemExit(main(sys.argv[0]))

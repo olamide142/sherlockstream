@@ -24,4 +24,5 @@ if __name__ == '__main__':
     code2ast.convert()
     print(code2ast.sourceCode)
     astpretty.pprint(code2ast.sourceAst)
-    breakpoint()
+    import astor
+    astor.code_gen.to_source(code2ast.sourceAst)

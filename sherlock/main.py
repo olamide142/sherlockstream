@@ -1,12 +1,13 @@
 '''Main entry to sherlock stream'''
+import os
 import sys
-import subprocess
 
 from sherlock.log4sherlock import Log4Sherlock
 from sherlock.code2ast import CodeToAst
 from sherlock.ast2code import AstToCode
 from sherlock.transformer import Transformer
 from sherlock.import_decoder import getPaths
+from sherlock.sherlock_exceptions import EntryFileException
 from sherlock.utils import backupOriginal, getFullpath, recoverOriginal, \
     sherlockUnhalt, saveParsedFiles, recoverOriginal
 
@@ -33,7 +34,9 @@ Log4Sherlock().startLogger()
 
 class _SherlockStream:
     '''Calling Sherlock Stream from source code'''
-    def __init__(self, entryFile):
+    def __init__(self, entryFile=None):
+        if entryFile is None:
+            raise EntryFileException()
         self.entryFile = entryFile
         main(self.entryFile)
 
@@ -64,10 +67,17 @@ def main(entryFile):
     
     saveParsedFiles(parsedFiles)
     sherlockUnhalt(entryFile)
-    subprocess.run(['python '].extend(sys.argv))
+    os.system(" ".join(['python3 '] + sys.argv))
     recoverOriginal()
+    
     return 0
 
 
 if __name__ == '__main__':
-    raise SystemExit(main(sys.argv[0]))
+    try:
+        main(sys.argv[0])
+    except Exception as ex:
+        sys.stdout.write(str(ex))
+    finally:
+        recoverOriginal()
+        raise SystemExit()

@@ -47,7 +47,6 @@ def getPaths(nodes, setToReturn=set()):
 
     return set(filter(filterImports, setToReturn))
 
-import astpretty
 def loadModule(node, modulePath, setToReturn):
 
     for name in node.names:
@@ -70,6 +69,7 @@ def findModule(module):
             return joinedPath+'.py' \
                 if os.path.isfile(joinedPath+'.py') else joinedPath
     return None
+
 if __name__ == '__main__':
         
     from sherlock.code2ast import CodeToAst

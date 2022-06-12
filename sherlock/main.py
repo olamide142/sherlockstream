@@ -1,11 +1,15 @@
 '''Main entry to sherlock stream'''
-import os
 import sys
-from sherlock import transformer
 
+from sherlock.log4sherlock import Log4Sherlock
 from sherlock.code2ast import CodeToAst
+from sherlock.ast2code import AstToCode
 from sherlock.transformer import Transformer
 from sherlock.import_decoder import getPaths
+from sherlock.utils import backupOriginal, getFullpath, recoverOriginal, \
+    sherlockUnhalt, saveParsedFiles, recoverOriginal
+
+Log4Sherlock().startLogger()
 
 """ALGORITHM
     1: halt the users process
@@ -17,7 +21,7 @@ from sherlock.import_decoder import getPaths
     7: get imports from currentAst
     8: decode the file path of code to be imported
     9: if done traversing all the required source code for 
-        the run jump to step 8 else jump back to step 3
+        the run jump to step 10 else jump back to step 3
     10: make sure entry file for the execution no longer 
         halt else we are going to be stucked in a loop
     11: create a subprocess to run users modified code
@@ -25,20 +29,12 @@ from sherlock.import_decoder import getPaths
     
     export PYTHONPATH="${PYTHONPATH}:/home/victor/workspace/sherlockstream"
 """
+
 class _SherlockStream:
     '''Calling Sherlock Stream from source code'''
     def __init__(self, entryFile):
         self.entryFile = entryFile
         main(self.entryFile)
-
-def getFullpath(entryFile):
-    currentDirectory = os.getcwd()
-
-    if not entryFile.startswith(currentDirectory):
-        entryFile = os.path.join(currentDirectory, entryFile)
-    
-    return entryFile
-
 
 def main(entryFile):
     entryFile = getFullpath(entryFile)
@@ -47,20 +43,27 @@ def main(entryFile):
     unparsedFiles.add(entryFile)
 
     while len(unparsedFiles) > 0:
-        
+        # break
         currentFile = unparsedFiles.pop()
         if currentFile not in parsedFiles:
 
-            converter = CodeToAst(currentFile)
-            currentAst = converter.convert()
+            codeConverter = CodeToAst(currentFile)
+            currentAst = codeConverter.convert()
 
-            # transformer = Transformer(currentFile)
-            # transformedAst = transformer.traverse(currentAst)
-           
+            transformer = Transformer(currentFile)
+            transformedAst = transformer.traverse(currentAst)
+
+            astConvert = AstToCode(transformedAst)
+            modifiedCodePath = astConvert.convert()
+            
+            backupOriginal(currentFile, modifiedCodePath)
+
             unparsedFiles = getPaths(currentAst, unparsedFiles)
             parsedFiles.add(currentFile)
-    import pprint
-    pprint.pprint(parsedFiles)
+        # break
+    sherlockUnhalt(entryFile)
+    saveParsedFiles(parsedFiles)
+    recoverOriginal()
 
     breakpoint()
     return 0

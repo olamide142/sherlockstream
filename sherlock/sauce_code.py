@@ -1,12 +1,12 @@
-from sherlock_data.record import Recorder
-from sherlock_data.sherlock_types import FunctionCall
+import logging
 
-""" Helper code to be injected into primary source """
+from sherlock.sherlock_types import TYPES
+from sherlock.log4sherlock import SHERLOCK_LOG_LEVEL, Log4Sherlock
+
+logger = Log4Sherlock().getLogger()
+
 def functionCalled(name, line):
-    recorder = Recorder.instance()
-    with open(recorder.getFile(), 'a') as f:
-        f.write(
-            str(FunctionCall(name, line))+
-            '\n'
-        )
-
+    """ Helper code to be injected into primary source """
+    logger.log(
+        SHERLOCK_LOG_LEVEL, str(TYPES['FunctionCall'](name, line))
+    )

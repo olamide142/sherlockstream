@@ -13,8 +13,7 @@ class Transformer:
             if isinstance(i, ast.FunctionDef):
                 i = self._visitFunctionDef(i)
             if isinstance(i, ast.Module):
-                # i = self._visitModule(i)
-                pass
+                i = self._visitModule(i)
 
         return node
 
@@ -38,7 +37,7 @@ class Transformer:
     def _visitModule(self, node):
         """ all files changed will have sauce_code visibility"""
         val = ast.fix_missing_locations(ast.ImportFrom(
-            module='sherlock_monkey.sauce_code',
+            module='sherlock.sauce_code',
             names=[ast.alias(name='*', asname=None)],
             level=0)
         )

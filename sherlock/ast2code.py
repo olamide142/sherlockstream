@@ -1,20 +1,20 @@
 import tempfile
-import ast
-
 import astor
 
 
 class AstToCode:
 
-    @staticmethod
-    def convert(astObject: ast.AST, path=None):
+    def __init__(self, astObject):
+        self.astObject = astObject
+
+    def convert(self, path=None):
         file = None
         if not path:
-            _ = tempfile.NamedTemporaryFile(delete=True, suffix='.py')
+            _ = tempfile.NamedTemporaryFile(delete=False, suffix='.py')
             path = _.name
 
         with open(path, 'w') as f:
-            f.write(astor.code_gen.to_source(astObject))
+            f.write(astor.code_gen.to_source(self.astObject))
 
         return path
         

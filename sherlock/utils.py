@@ -1,9 +1,9 @@
 import os
-import pprint
 import pickle
+import logging
 
 def backupOriginal(original, modified):
-    print(original, modified)
+    print(original)
     os.rename(original, original+'.ssb') #ssb: sherlock stream backup
     os.rename(modified, original)
 
@@ -17,10 +17,16 @@ def getFullpath(entryFile):
 
 def sherlockUnhalt(entryFile):
     """ remove Sherlock(__file__) from entryFile """
-    
+    # FIXME: this should be done via ast, not this way
+    with open(entryFile, 'r') as f:
+        sourceCode = f.read()
+        sourceCode = sourceCode.replace('Sherlock(__file__)', '')
 
+    with open(entryFile, 'w') as f:
+        print(sourceCode, file=f) 
 
 def recoverOriginal(path=None, delete=False):
+    logging.info('[+] Recovering Original Files')
     if not path:
         path = 'sherlock_parsed_files.sherlock'
         delete = True

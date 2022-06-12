@@ -1,5 +1,6 @@
 '''Main entry to sherlock stream'''
 import sys
+import subprocess
 
 from sherlock.log4sherlock import Log4Sherlock
 from sherlock.code2ast import CodeToAst
@@ -43,10 +44,9 @@ def main(entryFile):
     unparsedFiles.add(entryFile)
 
     while len(unparsedFiles) > 0:
-        # break
         currentFile = unparsedFiles.pop()
         if currentFile not in parsedFiles:
-
+            
             codeConverter = CodeToAst(currentFile)
             currentAst = codeConverter.convert()
 
@@ -55,17 +55,17 @@ def main(entryFile):
 
             astConvert = AstToCode(transformedAst)
             modifiedCodePath = astConvert.convert()
+            # os.remove(modifiedCodePath)
             
             backupOriginal(currentFile, modifiedCodePath)
 
             unparsedFiles = getPaths(currentAst, unparsedFiles)
             parsedFiles.add(currentFile)
-        # break
-    sherlockUnhalt(entryFile)
+    
     saveParsedFiles(parsedFiles)
+    sherlockUnhalt(entryFile)
+    subprocess.run(['python '].extend(sys.argv))
     recoverOriginal()
-
-    breakpoint()
     return 0
 
 

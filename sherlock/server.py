@@ -1,23 +1,34 @@
-import time
+"""Manage a sherlock stream session
+(not a network server)
+"""
+from sherlock.sherlock_data.code_data import Line
 
-def follow(file, sleep_sec=0.1):
-    """ Yield each line from a file as they are written.
-    `sleep_sec` is the time to sleep after empty reads. """
-    line = ''
-    while True:
-        tmp = file.readline()
-        if tmp is not None:
-            line += tmp
-            if line.endswith("\n"):
-                yield line
-                line = ''
-        elif sleep_sec:
-            time.sleep(sleep_sec)
+"""ALGORITHM
+    1: setup data structures
+    2: start tailing logs in a thread
+    3: parse the logs into data structure (maybe with re)
+    4: Query/Order by feature
+        * get most called function
+        * least called function
+    5: Group a sequence of calls that are identical 
+        eg: a->b->c->d->e->a->b->c->f-e->a
+        groups (a->b->c), (e->a)
+    6: get list of logs with a range (depending on where 
+        the scrollbar is maybe list slicing)
+    7: load a lines from a file based on log line #::#::#
+        
 
-def tailLog(logPath='sherlock.log'):
-    with open(logPath, 'r') as file:
-        for line in follow(file):
-            print(line, end='')
+"""
+
+
+class SourceView:
+
+    def __init__(self, line: str) -> None:
+        self.line = self.parse(line)
+
+    
+    def 
+
 
 if __name__ == '__main__':
-    tailLog("/home/victor/workspace/UniPortal/sherlock.log")
+    pass

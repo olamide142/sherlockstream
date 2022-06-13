@@ -78,6 +78,6 @@ if __name__ == '__main__':
         main(sys.argv[0])
     except Exception as ex:
         sys.stdout.write(str(ex))
-    finally:
         recoverOriginal()
-        raise SystemExit()
+        raise SystemExit(0)
+        

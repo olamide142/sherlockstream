@@ -38,7 +38,7 @@ class Transformer:
         """ all files changed will have sauce_code visibility"""
         val = ast.fix_missing_locations(ast.ImportFrom(
             module='sherlock.sauce_code',
-            names=[ast.alias(name='functionCalled', asname=None)],
+            names=[ast.alias(name='*', asname=None)],
             level=0)
         )
         node.body  = list([val] + node.body)

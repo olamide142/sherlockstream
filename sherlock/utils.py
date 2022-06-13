@@ -1,4 +1,5 @@
 import os
+import time
 import pickle
 import logging
 
@@ -45,3 +46,24 @@ def saveParsedFiles(parsedFiles):
         f.write(
             pickle.dumps(parsedFiles)
         )
+
+
+def tailLog(file, sleep_sec=0.1):
+    """ https://stackoverflow.com/questions/12523044/how-can-i-tail-a-log-file-in-python
+    Yield each line from a file as they are written.
+    `sleep_sec` is the time to sleep after empty reads. """
+    line = ''
+    while True:
+        tmp = file.readline()
+        if tmp is not None:
+            line += tmp
+            if line.endswith("\n"):
+                yield line
+                line = ''
+        elif sleep_sec:
+            time.sleep(sleep_sec)
+
+def tailLogUtil(logPath='sherlock.log'):
+    with open(logPath, 'r') as file:
+        for line in tailLog(file):
+            print(line, end='')

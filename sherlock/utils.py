@@ -1,7 +1,11 @@
 import os
+import uuid
 import time
 import pickle
 import logging
+
+def generateUuid():
+    return "".join(str(uuid.uuid4()).split('-'))
 
 def backupOriginal(original, modified):
     print(original)
@@ -26,27 +30,16 @@ def sherlockUnhalt(entryFile):
     with open(entryFile, 'w') as f:
         print(sourceCode, file=f) 
 
-def recoverOriginal(path=None, delete=False):
-    logging.info('[+] Recovering Original Files')
-    if not path:
-        path = 'sherlock_parsed_files.sherlock'
-        delete = True
+def recoverOriginal(db):
+    print('[+] Recovering Original Files')
+    cursor = db.getCursor()
+    files = cursor.execute(f"""select file_path from source_code where session_id={db.getSession()[0]}""")
+    for file in files:
+        file = file[0]
+        if os.path.isfile(file+'.ssb'):
+            os.rename(file+'.ssb', file)
+    print('[+] Done Recovering Original Files')
     
-    with open(path, 'rb') as f:
-        files = pickle.load(f)
-        for file in files:
-            if os.path.isfile(file+'.ssb'):
-                os.rename(file+'.ssb', file)
-    
-    if delete: os.remove(path)
-
-def saveParsedFiles(parsedFiles):
-
-    with open('sherlock_parsed_files.sherlock', 'wb+') as f: 
-        f.write(
-            pickle.dumps(parsedFiles)
-        )
-
 
 def tailLog(file, sleep_sec=0.1):
     """ https://stackoverflow.com/questions/12523044/how-can-i-tail-a-log-file-in-python

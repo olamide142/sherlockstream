@@ -3,15 +3,17 @@ import os
 import sys
 
 from sherlock.log4sherlock import Log4Sherlock
+from sherlock.sherlock_data.persistence import Log2DB
 from sherlock.code2ast import CodeToAst
 from sherlock.ast2code import AstToCode
 from sherlock.transformer import Transformer
 from sherlock.import_decoder import getPaths
 from sherlock.sherlock_exceptions import EntryFileException
 from sherlock.utils import backupOriginal, getFullpath, recoverOriginal, \
-    sherlockUnhalt, saveParsedFiles, recoverOriginal
+    sherlockUnhalt, recoverOriginal
 
-Log4Sherlock().startLogger()
+logger = Log4Sherlock().startLogger()
+
 
 """ALGORITHM
     1: halt the users process
@@ -40,7 +42,19 @@ class _SherlockStream:
         self.entryFile = entryFile
         main(self.entryFile)
 
+
+def cleanUp():
+    db = Log2DB.instance()
+    db.save()
+    recoverOriginal(db)
+    db.close()
+    raise SystemExit(0)
+
 def main(entryFile):
+    # database setup
+    db = Log2DB.instance()
+    dbSession = db.setUp()
+    
     entryFile = getFullpath(entryFile)
     parsedFiles = set()
     unparsedFiles = set() 
@@ -52,8 +66,9 @@ def main(entryFile):
             
             codeConverter = CodeToAst(currentFile)
             currentAst = codeConverter.convert()
+            dbSourceCodeId = codeConverter.saveFile()
 
-            transformer = Transformer(currentFile)
+            transformer = Transformer(currentFile, dbSourceCodeId)
             transformedAst = transformer.traverse(currentAst)
 
             astConvert = AstToCode(transformedAst)
@@ -65,19 +80,17 @@ def main(entryFile):
             unparsedFiles = getPaths(currentAst, unparsedFiles)
             parsedFiles.add(currentFile)
     
-    saveParsedFiles(parsedFiles)
     sherlockUnhalt(entryFile)
+
     os.system(" ".join(['python3 '] + sys.argv))
-    recoverOriginal()
-    
+    cleanUp()
     return 0
 
 
 if __name__ == '__main__':
     try:
         main(sys.argv[0])
-    except Exception as ex:
-        sys.stdout.write(str(ex))
-        recoverOriginal()
-        raise SystemExit(0)
+    finally:
+        print('[+] Crashing nicely')
+        cleanUp()
         

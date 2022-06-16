@@ -1,6 +1,5 @@
 '''Decode python import statements to file'''
 import ast
-from bdb import Breakpoint
 import sys
 import os
 

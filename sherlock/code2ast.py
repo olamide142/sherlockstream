@@ -1,7 +1,7 @@
 '''Convert python source code to python's Abstract Syntax Tree'''
 import ast
 
-import astpretty
+from sherlock.sherlock_data.persistence import Log2DB
 
 class CodeToAst:
 
@@ -17,3 +17,12 @@ class CodeToAst:
         if not self.sourceCode:
             self.reader()
         return ast.parse(self.sourceCode)
+    
+    def saveFile(self):
+        db = Log2DB.instance()
+        sql = f"""
+                    INSERT INTO source_code
+                    (file_path, session_id)
+                    VALUES('{self.filePath}', {db.getSession()[0]})
+                """
+        return db.insertQuery(sql)

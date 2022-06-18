@@ -1,7 +1,6 @@
 '''Transform/Modiify a python ast node'''
 import ast
 
-from sherlock.sherlock_data.code_data import Line
 from sherlock.sherlock_data.persistence import Log2DB, DBFormatter
 from sherlock.utils import generateUuid
 

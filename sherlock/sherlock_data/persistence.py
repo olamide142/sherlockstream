@@ -92,8 +92,8 @@ class Log2DB:
             );
         """
         createProgramFlow = """
-            CREATE TABLE IF NOT EXISTS program_flow (
-                program_flow_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+            CREATE TABLE IF NOT EXISTS function_call (
+                function_call_id     INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_id          INTEGER NOT NULL,
                 hash_id              TEXT NOT NULL
             );

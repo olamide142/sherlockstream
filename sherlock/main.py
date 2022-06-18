@@ -1,6 +1,7 @@
 '''Main entry to sherlock stream'''
 import os
 import sys
+import subprocess
 
 from sherlock.log4sherlock import Log4Sherlock
 from sherlock.sherlock_data.persistence import Log2DB
@@ -9,6 +10,7 @@ from sherlock.ast2code import AstToCode
 from sherlock.transformer import Transformer
 from sherlock.import_decoder import getPaths
 from sherlock.sherlock_exceptions import EntryFileException
+from sherlock.sherlock_data.data_util import getFunctionCalls
 from sherlock.utils import backupOriginal, getFullpath, recoverOriginal, \
     sherlockUnhalt, recoverOriginal
 
@@ -43,17 +45,15 @@ class _SherlockStream:
         main(self.entryFile)
 
 
-def cleanUp():
-    db = Log2DB.instance()
+def cleanUp(db):
     db.save()
-    recoverOriginal(db)
-    db.close()
-    raise SystemExit(0)
+    print("[+] Done with cleanUp")
+    os.posix_spawn("")
 
 def main(entryFile):
     # database setup
     db = Log2DB.instance()
-    dbSession = db.setUp()
+    db.setUp()
     
     entryFile = getFullpath(entryFile)
     parsedFiles = set()
@@ -81,16 +81,14 @@ def main(entryFile):
             parsedFiles.add(currentFile)
     
     sherlockUnhalt(entryFile)
+    subprocess.check_call([sys.executable, *sys.argv])
+    cleanUp(db)
+    getFunctionCalls(db)    
+    recoverOriginal(db)
+    db.close()
 
-    os.system(" ".join(['python3 '] + sys.argv))
-    cleanUp()
-    return 0
 
 
 if __name__ == '__main__':
-    try:
-        main(sys.argv[0])
-    finally:
-        print('[+] Crashing nicely')
-        cleanUp()
-        
+    main(sys.argv[0])
+    os.system(" ".join(['python3 '] + sys.argv))

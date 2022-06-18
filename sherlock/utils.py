@@ -40,7 +40,7 @@ def recoverOriginal(db):
             os.rename(file+'.ssb', file)
     print('[+] Done Recovering Original Files')
     
-
+    
 def tailLog(file, sleep_sec=0.1):
     """ https://stackoverflow.com/questions/12523044/how-can-i-tail-a-log-file-in-python
     Yield each line from a file as they are written.

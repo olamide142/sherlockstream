@@ -10,7 +10,8 @@ db = Log2DB.instance()
 def functionCalled(hashId):
     """ Helper code to be injected into primary source """
     sql = f"""
-        INSERT INTO program_flow (session_id, hash_id) 
+        INSERT INTO function_call (session_id, hash_id) 
         VALUES ({db.getSession()[0]}, '{hashId}')
     """
+    print(sql)
     db.insertQuery(sql)

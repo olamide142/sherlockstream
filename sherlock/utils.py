@@ -38,6 +38,7 @@ def recoverOriginal(db):
         file = file[0]
         if os.path.isfile(file+'.ssb'):
             os.rename(file+'.ssb', file)
+            print(f'[+] Recovered {file}')
     print('[+] Done Recovering Original Files')
     
     

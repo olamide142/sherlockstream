@@ -1,7 +1,13 @@
 """Manage a sherlock stream session
 (not a network server)
 """
-from sherlock.sherlock_data.code_data import Line
+import functools
+
+import zmq
+from sherlock.sherlock_data.persistence import Log2DB
+
+from sherlock.utils import recoverOriginal
+
 
 """ALGORITHM
     1: setup data structures
@@ -19,16 +25,49 @@ from sherlock.sherlock_data.code_data import Line
         
 
 """
+class Server:
 
+    def __init__(self, db) -> None:
+        self.recovered = False
+        self.db = db
+        self.running = True
+        self.socket = self.setUp()
 
-class SourceView:
+    def setUp(self):
+        # Creates a socket instance
+        context = zmq.Context()
+        subscriber = context.socket(zmq.SUB)
+        subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
+        # Connects to a bound socket
+        subscriber.connect("ipc:///tmp/sherlock_stream_network")
 
-    def __init__(self, line: str) -> None:
-        self.line = self.parse(line)
+        # Subscribes to all topics
+        subscriber.subscribe("")
 
+        print('[+] Server started')
+        return subscriber
+
+    def poll(self):
+        while self.running:
+            val = self.socket.recv_string()
+            self.recover()
+            if val:
+                yield val.upper()
+        raise StopIteration
     
-    def 
-
+    def kill(self):
+        print("killing server")
+        self.running = False
+                
+    @functools.lru_cache(maxsize=1)
+    def recover(self):
+        if not self.recovered:
+            recoverOriginal(self.db)
+            self.recovered = True
 
 if __name__ == '__main__':
-    pass
+    # db = Log2DB.instance()
+    # server = Server(db)
+    # for i in server.poll():
+    #     print(i)
+    ...

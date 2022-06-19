@@ -18,7 +18,7 @@ def filterImports(path):
         isPython(path),
         '/usr/lib/python3.8' not in path,
         '/sherlockstream/sherlock' not in path,
-        '/venv/' not in path
+        # '/venv/' not in path
     ])
 
 def getPaths(nodes, setToReturn=set()):
@@ -45,7 +45,6 @@ def getPaths(nodes, setToReturn=set()):
         else:
             for name in node.names:
                 setToReturn.add(findModule(name.name))
-
     return set(filter(filterImports, setToReturn))
 
 def loadModule(node, modulePath, setToReturn):

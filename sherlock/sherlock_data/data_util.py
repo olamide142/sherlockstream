@@ -14,4 +14,4 @@ def getFunctionCalls(db):
     cursor = db.getCursor()
     for row in cursor.execute(sql):
         print(row)
-    breakpoint()
+    # breakpoint()

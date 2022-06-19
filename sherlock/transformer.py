@@ -10,6 +10,7 @@ class Transformer:
         self._starterFile = file
         self.dbSourceCodeId = dbSourceCodeId
         self.db = Log2DB.instance()
+        self.sessionId = self.db.getSession()[0]
         super().__init__()
 
     def traverse(self, node):
@@ -41,9 +42,9 @@ class Transformer:
                 value=ast.Call(
                     func=ast.Name(id="functionCalled", ctx=ast.Load()),
                     args=[],
-                    keywords=[ast.keyword(arg='hashId',value=ast.Constant(value=hashId, ctx=ast.Load(), kind=None)),
-                            # ast.keyword(arg='line',value=ast.Constant(value=Line().parse(node, self._starterFile), 
-                            #     ctx=ast.Load(), kind=None))
+                    keywords=[
+                        ast.keyword(arg='sessionId',value=ast.Constant(value=self.sessionId, ctx=ast.Load(), kind=None)),
+                        ast.keyword(arg='hashId',value=ast.Constant(value=hashId, ctx=ast.Load(), kind=None)),
                     ],
                 )
             ))

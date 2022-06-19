@@ -13,7 +13,7 @@ class Log2DB:
     _instance = None
 
     @classmethod
-    def instance(cls, dbName=':memory:'):
+    def instance(cls, dbName='./sherlock_db'):
         """Singleton instance"""
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
@@ -122,10 +122,20 @@ class Log2DB:
     
     @classmethod
     def close(cls):
+        breakpoint()
         cls.getCursor().close()
         cls._instance['connection'].close()
 
 
     
 if __name__ == '__main__':
+    from uuid import uuid4
     db = Log2DB.instance()
+    cursor = db.getCursor()
+    # for i in range(110000):
+    #     sql = f"""
+    #             insert into function_call (session_id, hash_id)
+    #             values('{uuid4()}', '{uuid4()}')
+    #         """
+    #     print(sql)
+    #     cursor.execute(sql)

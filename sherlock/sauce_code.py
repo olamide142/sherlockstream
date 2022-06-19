@@ -1,17 +1,31 @@
 import logging
+import functools
+
+import zmq
 
 from sherlock.sherlock_types import TYPES
 from sherlock.log4sherlock import SHERLOCK_LOG_LEVEL, Log4Sherlock
-from sherlock.sherlock_data.persistence import Log2DB
 
 logger = Log4Sherlock().getLogger()
-db = Log2DB.instance() 
 
-def functionCalled(hashId):
-    """ Helper code to be injected into primary source """
+@functools.lru_cache(maxsize=1)
+def getPublisher():
+    context = zmq.Context()
+    publisher = context.socket(zmq.PUB)
+    publisher.bind("ipc:///tmp/sherlock_stream_network")
+    print('[+] Sherlock publisher ready')
+    publisher.send_string('ok')
+    return publisher
+
+def functionCalled(sessionId, hashId):
+    """ Helper code to be injected into primary source
+        and publish the event to the server
+    """
+    
     sql = f"""
         INSERT INTO function_call (session_id, hash_id) 
-        VALUES ({db.getSession()[0]}, '{hashId}')
+        VALUES ({sessionId}, '{hashId}')
     """
-    print(sql)
-    db.insertQuery(sql)
+    publisher = getPublisher()
+    publisher.send_string(sql)
+    

@@ -13,7 +13,8 @@ class Log2DB:
     _instance = None
 
     @classmethod
-    def instance(cls, dbName='./sherlock_db'):
+    def instance(cls, dbName=':memory:'):
+        dbName = "./sherlock_db"
         """Singleton instance"""
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
@@ -23,6 +24,7 @@ class Log2DB:
             cls._instance['connection'] = cls.connect()
             cls.setUp()
             print('[+] Done Creating a new singleton instance of Sherlock DB')
+            print(f'[+] DB session {cls.getSession()}')
         return cls
 
     @classmethod
@@ -122,9 +124,9 @@ class Log2DB:
     
     @classmethod
     def close(cls):
-        breakpoint()
         cls.getCursor().close()
         cls._instance['connection'].close()
+        print("_______"*100)
 
 
     

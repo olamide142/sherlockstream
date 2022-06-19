@@ -85,34 +85,24 @@ class _SherlockStream:
         if pid > 0:
             # parent process
             self.runUserCode()
-            print("*******"*100)
+            db.close()
             sys.exit()
         else:
             self.startServer(db)
-            self.server.kill()
-            sys.exit()
-        
-        sys.exit()
-
+            print("*******"*100)
+            # sys.exit()
 
     def runUserCode(self):
         time.sleep(1)
         subprocess.run([sys.executable, sys.argv[0]], stdout=subprocess.PIPE)
         return 0
 
-    def cleanUp(self, db):
-        db.save()
-        print("[+] Done with cleanUp")
-
     def startServer(self, db):
         self.server = Server(db)
-
-        for index, val in enumerate(self.server.poll()):
-
-            print(0)
-            ...
-            # if index%100==0:
-            #     self.cleanUp(db)
+        cursor = db.getCursor()
+        for sql in self.server.poll():
+            cursor.execute(sql)
+            print(sql)
 
         db.close()
 

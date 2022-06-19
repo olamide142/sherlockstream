@@ -81,7 +81,9 @@ class _SherlockStream:
         #to avoid getting stuck in a recursion
         sherlockUnhalt(entryFile) 
 
+        ppid = os.getpid()
         pid = os.fork()
+
         if pid > 0:
             # parent process
             self.runUserCode()
@@ -89,13 +91,12 @@ class _SherlockStream:
             sys.exit()
         else:
             self.startServer(db)
-            print("*******"*100)
-            # sys.exit()
+            breakpoint()
+            sys.exit()
 
     def runUserCode(self):
         time.sleep(1)
         subprocess.run([sys.executable, sys.argv[0]], stdout=subprocess.PIPE)
-        return 0
 
     def startServer(self, db):
         self.server = Server(db)

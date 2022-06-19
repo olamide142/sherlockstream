@@ -3,6 +3,7 @@ import os
 os.system('rm -rf /home/victor/workspace/sherlockstream/venv/lib/python3.8/site-packages/flake8*/')
 os.system('rm -rf /home/victor/workspace/sherlockstream/venv/lib/python3.8/site-packages/pyflake*/')
 os.system('rm -rf /home/victor/workspace/sherlockstream/venv/lib/python3.8/site-packages/pygame*/')
+os.system('rm -rf sherlock_db sherlock.log ')
 os.system('pip3 install flake8 pygame')
 import time
 time.sleep(2)

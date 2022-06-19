@@ -52,7 +52,7 @@ class Server:
             val = self.socket.recv_string()
             self.recover()
             if val:
-                yield val.upper()
+                yield val
         raise StopIteration
     
     def kill(self):

@@ -16,7 +16,7 @@ def filterImports(path):
 
     return path and all([
         isPython(path),
-        '/usr/lib/python3.8' not in path,
+        '/usr/lib/' not in path,
         '/sherlockstream/sherlock' not in path,
         # '/venv/' not in path
     ])

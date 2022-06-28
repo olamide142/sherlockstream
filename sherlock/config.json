@@ -1,0 +1,12 @@
+{
+    "source_code_filter": {
+        "virtual_environment": true,
+        "python": false
+    },
+
+    "storage": {
+        "log_file": "sherlock.log",
+        "database": "sherlock.db"
+    }
+    
+}

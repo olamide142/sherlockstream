@@ -46,7 +46,6 @@ class _SherlockStream:
         self.entryFile = entryFile
         self.server = None
         self.main(self.entryFile)
-        sys.exit()
 
         
     def main(self, entryFile):
@@ -86,12 +85,11 @@ class _SherlockStream:
 
         if pid > 0:
             # parent process
-            self.runUserCode()
+            self.startServer(db)
             db.close()
             sys.exit()
         else:
-            self.startServer(db)
-            breakpoint()
+            self.runUserCode()
             sys.exit()
 
     def runUserCode(self):

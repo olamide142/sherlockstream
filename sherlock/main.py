@@ -19,23 +19,8 @@ from sherlock.utils import backupOriginal, getFullpath, sherlockUnhalt
 logger = Log4Sherlock().startLogger()
 
 
-"""ALGORITHM
-    1: halt the users process
-    2: once in control get the entry file name
-    3: parse file to currentAst
-    4: transform/modify currentAst
-    5: convert currentAst back to python code
-    6: update the file with the new modified code 
-    7: get imports from currentAst
-    8: decode the file path of code to be imported
-    9: if done traversing all the required source code for 
-        the run jump to step 10 else jump back to step 3
-    10: make sure entry file for the execution no longer 
-        halt else we are going to be stucked in a loop
-    11: create a subprocess to run users modified code
-    12: start SherlockServer to inspect a sherlock run session
-    
-    export PYTHONPATH="${PYTHONPATH}:/home/victor/workspace/sherlockstream"
+"""
+export PYTHONPATH="${PYTHONPATH}:/home/victor/workspace/sherlockstream"
 """
 
 class _SherlockStream:
@@ -45,13 +30,12 @@ class _SherlockStream:
             raise EntryFileException()
         self.entryFile = entryFile
         self.server = None
+        self.db = Log2DB.instance()
         self.main(self.entryFile)
 
         
     def main(self, entryFile):
         # database setup
-        db = Log2DB.instance()
-        db.setUp()
         
         entryFile = getFullpath(entryFile)
         parsedFiles = set()
@@ -80,30 +64,27 @@ class _SherlockStream:
         #to avoid getting stuck in a recursion
         sherlockUnhalt(entryFile) 
 
-        ppid = os.getpid()
-        pid = os.fork()
-
-        if pid > 0:
-            # parent process
-            self.startServer(db)
-            db.close()
-            sys.exit()
+        if os.fork():
+            self.runUserCode()
+            # self.startServer()
         else:
             self.runUserCode()
-            sys.exit()
+        # parent process
+        # db.close()
+        # sys.exit()
 
     def runUserCode(self):
         time.sleep(1)
-        subprocess.run([sys.executable, sys.argv[0]], stdout=subprocess.PIPE)
+        os.execv(sys.executable, sys.argv)
 
-    def startServer(self, db):
-        self.server = Server(db)
-        cursor = db.getCursor()
+    def startServer(self):
+        self.server = Server(self.db)
+        cursor = self.db.getCursor()
         for sql in self.server.poll():
             cursor.execute(sql)
             print(sql)
 
-        db.close()
+        self.db.close()
 
 
 if __name__ == '__main__':

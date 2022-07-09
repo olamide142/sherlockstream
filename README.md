@@ -1,3 +1,2 @@
 # sherlockstream
-    best to run this in a container...
-    An investigative python debugger to save me a few hair strands
+	Pythonish debugger

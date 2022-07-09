@@ -2,6 +2,7 @@
 import os
 os.system('rm -rf /home/victor/workspace/sherlockstream/venv/lib/python3.8/site-packages/flake8*/')
 os.system('rm -rf /home/victor/workspace/sherlockstream/venv/lib/python3.8/site-packages/pyflake*/')
+os.system('rm -rf /home/victor/workspace/sherlockstream/sherlock_db*')
 os.system('rm /tmp/sherlock_stream_network')
 
 # os.system('rm -rf /home/victor/workspace/sherlockstream/venv/lib/python3.8/site-packages/pygame*/')
@@ -22,4 +23,4 @@ with open('/home/victor/workspace/sherlockstream/venv/lib/python3.8/site-package
     f.write(lines)
 
 time.sleep(1)
-os.system('python -m flake8 /home/victor/workspace/sherlockstream/sherlock/log4sherlock.py')
+os.system('python -m flake8 /home/victor/workspace/sherlockstream/sherlock/log4sherlock.py | tee log.txt')

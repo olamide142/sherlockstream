@@ -14,7 +14,6 @@ def getPublisher():
     publisher = context.socket(zmq.PUB)
     publisher.bind("ipc:///tmp/sherlock_stream_network")
     print('[+] Sherlock publisher ready')
-    publisher.send_string('ok')
     return publisher
 
 def functionCalled(sessionId, hashId):

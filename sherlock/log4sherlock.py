@@ -4,7 +4,6 @@ import logging
 import sqlite3
 
 from sherlock.sherlock_types import TYPES
-from sherlock.sherlock_data.code_data import Line
 
 
 SHERLOCK_LOG_LEVEL = 9999

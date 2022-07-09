@@ -12,6 +12,3 @@ def getFunctionCalls(db):
     """
     sql = "select * from function_call"
     cursor = db.getCursor()
-    for row in cursor.execute(sql):
-        # print(row)
-        ...

@@ -53,6 +53,8 @@ class Server:
             self.recover()
             if val:
                 yield val
+                if val=='quit':
+                    break
         raise StopIteration
     
     def kill(self):

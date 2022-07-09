@@ -21,6 +21,30 @@ def filterImports(path):
         # '/venv/' not in path
     ])
 
+
+def loadModule(node, modulePath, setToReturn):
+
+    for name in node.names:
+        name = name.name + '.py'
+        joinedName = os.path.join(modulePath, name)
+
+        if os.path.isfile(joinedName):
+            setToReturn.add(joinedName)
+        if os.path.isfile(modulePath+'/__init__.py'):
+            setToReturn.add(modulePath+'/__init__.py')
+
+    return setToReturn
+
+def findModule(module):
+    module = module.replace('.', '/')
+    for path in reversed(sys.path):
+        joinedPath = os.path.join(path, module)
+
+        if os.path.isdir(joinedPath) or os.path.isfile(joinedPath+'.py'):
+            return joinedPath+'.py' \
+                if os.path.isfile(joinedPath+'.py') else joinedPath
+    return None
+
 def getPaths(nodes, setToReturn=set()):
 
     for node in getImportNodes(nodes):
@@ -46,29 +70,6 @@ def getPaths(nodes, setToReturn=set()):
             for name in node.names:
                 setToReturn.add(findModule(name.name))
     return set(filter(filterImports, setToReturn))
-
-def loadModule(node, modulePath, setToReturn):
-
-    for name in node.names:
-        name = name.name + '.py'
-        joinedName = os.path.join(modulePath, name)
-
-        if os.path.isfile(joinedName):
-            setToReturn.add(joinedName)
-        if os.path.isfile(modulePath+'/__init__.py'):
-            setToReturn.add(modulePath+'/__init__.py')
-
-    return setToReturn
-
-def findModule(module):
-    module = module.replace('.', '/')
-    for path in reversed(sys.path):
-        joinedPath = os.path.join(path, module)
-
-        if os.path.isdir(joinedPath) or os.path.isfile(joinedPath+'.py'):
-            return joinedPath+'.py' \
-                if os.path.isfile(joinedPath+'.py') else joinedPath
-    return None
 
 if __name__ == '__main__':
         

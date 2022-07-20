@@ -1,75 +1,31 @@
-"""Manage a sherlock stream session
-(not a network server)
-"""
-import functools
+import sys
+import asyncio
 
-import zmq
-from sherlock.sherlock_data.persistence import Log2DB
+async def handle_echo(reader, writer):
+    data = await reader.read(100)
+    message = data.decode()
+    addr = writer.get_extra_info('peername')
 
-from sherlock.utils import recoverOriginal
+    if message == 'quit':
+        sys.exit(0)
 
+    print(f"Received {message!r} from {addr!r}")
 
-"""ALGORITHM
-    1: setup data structures
-    2: start tailing logs in a thread
-    3: parse the logs into data structure (maybe with re)
-    4: Query/Order by feature
-        * get most called function
-        * least called function
-    5: Group a sequence of calls that are identical 
-        eg: a->b->c->d->e->a->b->c->f-e->a
-        groups (a->b->c), (e->a)
-    6: get list of logs with a range (depending on where 
-        the scrollbar is maybe list slicing)
-    7: load a lines from a file based on log line #::#::#
-        
+    print(f"Send: {message!r}")
+    writer.write(data)
+    await writer.drain()
 
-"""
-class Server:
+    print("Close the connection")
+    writer.close()
 
-    def __init__(self, db) -> None:
-        self.recovered = False
-        self.db = db
-        self.running = True
-        self.socket = self.setUp()
+async def main():
+    server = await asyncio.start_server(
+        handle_echo, '127.0.0.1', 8888)
 
-    def setUp(self):
-        # Creates a socket instance
-        context = zmq.Context()
-        subscriber = context.socket(zmq.SUB)
-        subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
-        # Connects to a bound socket
-        subscriber.connect("ipc:///tmp/sherlock_stream_network")
+    addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
+    print(f'Serving on {addrs}')
 
-        # Subscribes to all topics
-        subscriber.subscribe("")
+    async with server:
+        await server.serve_forever()
 
-        print('[+] Server started')
-        return subscriber
-
-    def poll(self):
-        while self.running:
-            val = self.socket.recv_string()
-            self.recover()
-            if val:
-                yield val
-                if val=='quit':
-                    break
-        raise StopIteration
-    
-    def kill(self):
-        print("killing server")
-        self.running = False
-                
-    @functools.lru_cache(maxsize=1)
-    def recover(self):
-        if not self.recovered:
-            recoverOriginal(self.db)
-            self.recovered = True
-
-if __name__ == '__main__':
-    # db = Log2DB.instance()
-    # server = Server(db)
-    # for i in server.poll():
-    #     print(i)
-    ...
+asyncio.run(main())

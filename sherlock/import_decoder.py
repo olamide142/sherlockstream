@@ -74,7 +74,7 @@ def getPaths(nodes, setToReturn=set()):
 if __name__ == '__main__':
         
     from sherlock.code2ast import CodeToAst
-    decoder = getPaths(CodeToAst('/home/victor/workspace/sherlockstream/sherlock/__init__.py').convert())
+    decoder = getPaths(CodeToAst('/home/victor/workspace/flasky/website/models.py').convert())
     # ast.parse('from sherlock import ast'),set())
     import pprint
     pprint.pprint(decoder)

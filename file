@@ -1,0 +1,12 @@
+total 36
+drwxrwxrwx  6 victor victor 4096 Jul 17 19:23 .
+drwxrwxr-x 31 victor victor 4096 Jul  5 00:58 ..
+-rw-rw-r--  1 victor victor    0 Jul 17 19:23 file
+drwxrwxrwx  8 victor victor 4096 Jul  9 02:09 .git
+-rwxrwxrwx  1 victor victor   60 Jun 19 20:16 .gitignore
+-rwxrwxrwx  1 victor victor   37 Jul  8 22:42 README.md
+-rw-rw-r--  1 victor victor   12 Jun 20 19:41 requirements.txt
+drwxrwxrwx  4 victor victor 4096 Jul 17 19:22 sherlock
+-rw-rw-r--  1 victor victor    0 Jul 15 11:04 sherlock.log
+drwxrwxrwx  2 victor victor 4096 Jun 11 15:31 tests
+drwxrwxrwx  6 victor victor 4096 Jun 11 09:54 venv

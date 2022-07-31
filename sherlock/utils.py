@@ -1,24 +1,24 @@
 import os
 import uuid
 import time
-import pickle
+import shutil
 import logging
 
 def generateUuid():
     return "".join(str(uuid.uuid4()).split('-'))
 
-def backupOriginal(original, modified):
-    print(original)
-    os.rename(original, original+'.ssb') #ssb: sherlock stream backup
-    os.rename(modified, original)
+def backup_original(original):
+    shutil.copyfile(original, original+'.ssb') #ssb: sherlock stream backup
 
-def getFullpath(entryFile):
+
+def get_full_path(entryFile):
     currentDirectory = os.getcwd()
 
     if not entryFile.startswith(currentDirectory):
         entryFile = os.path.join(currentDirectory, entryFile)
     
     return entryFile
+
 
 def sherlockUnhalt(entryFile):
     """ remove Sherlock(__file__) from entryFile """
@@ -29,6 +29,7 @@ def sherlockUnhalt(entryFile):
 
     with open(entryFile, 'w') as f:
         print(sourceCode, file=f) 
+
 
 def recoverOriginal(db):
     print('[+] Recovering Original Files')
@@ -56,6 +57,7 @@ def tailLog(file, sleep_sec=0.1):
                 line = ''
         elif sleep_sec:
             time.sleep(sleep_sec)
+
 
 def tailLogUtil(logPath='sherlock.log'):
     with open(logPath, 'r') as file:

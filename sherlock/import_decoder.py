@@ -3,26 +3,28 @@ import ast
 import sys
 import os
 
-def getImportNodes(nodes):
+
+def get_import_nodes(nodes):
     for node in ast.walk(nodes):
         if isinstance(node, (ast.Import, ast.ImportFrom)):
             yield node
 
-def isPython(file):
+
+def is_python(file):
     return file and file.endswith('.py')
 
 
-def filterImports(path):
+def filter_imports(path):
 
     return path and all([
-        isPython(path),
+        is_python(path),
         '/usr/lib/' not in path,
         '/sherlockstream/sherlock' not in path,
-        # '/venv/' not in path
+        '/venv/' not in path
     ])
 
 
-def loadModule(node, modulePath, setToReturn):
+def load_module(node, modulePath, setToReturn):
 
     for name in node.names:
         name = name.name + '.py'
@@ -35,7 +37,8 @@ def loadModule(node, modulePath, setToReturn):
 
     return setToReturn
 
-def findModule(module):
+
+def find_module(module):
     module = module.replace('.', '/')
     for path in reversed(sys.path):
         joinedPath = os.path.join(path, module)
@@ -45,36 +48,29 @@ def findModule(module):
                 if os.path.isfile(joinedPath+'.py') else joinedPath
     return None
 
-def getPaths(nodes, setToReturn=set()):
 
-    for node in getImportNodes(nodes):
+def get_paths(nodes, setToReturn=set()):
+    """Get list of related python files for the run """
+    for node in get_import_nodes(nodes):
 
         module = vars(node).get('module', None)
         
         if module:
-            modulePath = findModule(module)
+            modulePath = find_module(module)
             if not modulePath: continue
 
             setToReturn.add(modulePath)
-            setToReturn = loadModule(node, modulePath, setToReturn)
+            setToReturn = load_module(node, modulePath, setToReturn)
         
             for name in node.names:
-                modulePath = findModule(name.name)
+                modulePath = find_module(name.name)
 
                 setToReturn.add(modulePath)
-                modulePath = findModule(module)
+                modulePath = find_module(module)
                 if not modulePath: continue
-                setToReturn = loadModule(node, modulePath, setToReturn)
+                setToReturn = load_module(node, modulePath, setToReturn)
 
         else:
             for name in node.names:
-                setToReturn.add(findModule(name.name))
-    return set(filter(filterImports, setToReturn))
-
-if __name__ == '__main__':
-        
-    from sherlock.code2ast import CodeToAst
-    decoder = getPaths(CodeToAst('/home/victor/workspace/flasky/website/models.py').convert())
-    # ast.parse('from sherlock import ast'),set())
-    import pprint
-    pprint.pprint(decoder)
+                setToReturn.add(find_module(name.name))
+    return set(filter(filter_imports, setToReturn)) 

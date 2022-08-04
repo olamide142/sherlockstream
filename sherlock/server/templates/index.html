@@ -14,12 +14,18 @@
 
     <div class="row">
         <div class="column">
-            <table cellspacing="2" class="w3-table" >
+            <table cellspacing="2" class="w3-table">
                 <tr>
                     <th># #</th>
                     <th>Function</th>
                     <th>Caller</th>
                     <th></th>
+                </tr>
+
+                <tr>
+                    {% for node in run_info %}
+                        <p>{{ node }}</p>
+                    {% endfor %}
                 </tr>
 
             </table>

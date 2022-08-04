@@ -76,8 +76,7 @@ def sherlock_yellow(func):
     def inner(*args, **kwargs):
         # TODO:Get all the info needed and pass 
         # info to sherlock server here
-        breakpoint()
-        print(f"{args}, \t {type(args)}, \t {func}")
+        # print(f"{args}, \t {type(args)}, \t {func}")
         return func(*args, **kwargs)
 
     return inner

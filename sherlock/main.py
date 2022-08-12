@@ -27,20 +27,19 @@ class _SherlockStream:
         unparsed_files.add(entry_file)
 
         while len(unparsed_files) > 0:
+            print(unparsed_files)
             current_file = unparsed_files.pop()
             if current_file not in parsed_files:
                 current_ast = convert_file_to_ast(current_file)
                 unparsed_files = get_paths(current_ast, unparsed_files)
-
-                backup_original(current_file)
-                function_decorator(current_file)
-                parsed_files.add(current_file)
+            print(current_file)
+            backup_original(current_file)
+            function_decorator(current_file)
+            parsed_files.add(current_file)
         
         #to avoid getting stuck in a recursion
         sherlockUnhalt(entry_file)
         
-
-
 
 if __name__ == '__main__':
     _SherlockStream(sys.argv[0])

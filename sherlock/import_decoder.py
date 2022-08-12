@@ -3,7 +3,7 @@ import ast
 import sys
 import os
 
-from sherlock.config_parser import get_config
+# from sherlock.config_parser import get_config
 
 def get_import_nodes(nodes):
     for node in ast.walk(nodes):
@@ -19,7 +19,7 @@ def filter_imports(path):
 
     return path and all([
         is_python(path),
-        # '/usr/lib/' not in path,
+        '/usr/lib/' not in path,
         '/sherlockstream/sherlock' not in path,
         '/venv/' not in path
     ])

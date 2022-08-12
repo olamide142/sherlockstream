@@ -3,6 +3,7 @@ import ast
 
 from sherlock.sherlock_data.persistence import Log2DB, DBFormatter
 from sherlock.utils import generateUuid
+from sherlock.server.dispatcher import main
  
 class Transformer:
 
@@ -73,10 +74,11 @@ def sherlock_yellow(func):
     https://static01.nyt.com/images/2010/08/12/nyregion/20100812marker-cityroom/20100812marker-cityroom-blogSpan.jpg
     """
 
-    def inner(*args, **kwargs):
+    async def inner(*args, **kwargs):
         # TODO:Get all the info needed and pass 
         # info to sherlock server here
         # print(f"{args}, \t {type(args)}, \t {func}")
+        await main(str(func))
         return func(*args, **kwargs)
 
     return inner
@@ -107,27 +109,3 @@ def function_decorator(source_file):
                 f.write(f"{' '*get_indent_length(line)}@sherlock_yellow\n")
             f.write(line)
     return True
-
-# ........................................................
-import eventlet
-import socketio
-
-sio = socketio.Server()
-app = socketio.WSGIApp(sio, static_files={
-    '/': {'content_type': 'text/html', 'filename': 'index.html'}
-})
-
-@sio.event
-def connect(sid, environ):
-    print('connect ', sid)
-
-@sio.event
-def my_message(sid, data):
-    print('message ', data)
-
-@sio.event
-def disconnect(sid):
-    print('disconnect ', sid)
-
-if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet.listen(('', 5000)), app)

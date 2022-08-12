@@ -20,27 +20,27 @@ class EchoClientProtocol(asyncio.Protocol):
         pass
 
 
-async def main():
+async def main(message):
     # Get a reference to the event loop as we plan to use
     # low-level APIs.
 
     loop = asyncio.get_running_loop()
-    start = time.time()
-    total = 0
+    # start = time.time()
+    # total = 0
 
-    for i in range(1, 1_000_000+1):
-        if i%50000 == 0:
-            total += 50000
-            print(f"time taken for {total} records is {time.time()-start} seconds")
+    # for i in range(1, 1_000_000+1):
+    #     if i%50000 == 0:
+    #         total += 50000
+    #         print(f"time taken for {total} records is {timme.time()-start} seconds")
         # on_con_lost = loop.create_future()
 
-        message = f"{i}    {uuid4()}"
-        transport, protocol = await loop.create_connection(
-            lambda: EchoClientProtocol(message),
-            '127.0.0.1', 8888)
+        # message = f"{i}    {uuid4()}"
+    transport, protocol = await loop.create_connection(
+        lambda: EchoClientProtocol(message),
+        '127.0.0.1', 8888)
 
     # Wait until the protocol signals that the connection
     # is lost and close the transport.
     transport.close()
 
-asyncio.run(main())
+# asyncio.run(main())

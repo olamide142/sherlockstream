@@ -21,7 +21,7 @@ def filter_imports(path):
         is_python(path),
         '/usr/lib/' not in path,
         '/sherlockstream/sherlock' not in path,
-        '/venv/' not in path
+        # '/venv/' not in path
     ])
 
 
@@ -51,6 +51,7 @@ def find_module(module):
 
 
 def get_paths(nodes, setToReturn=set()):
+
     """Get list of related python files for the run """
     for node in get_import_nodes(nodes):
 
@@ -74,4 +75,5 @@ def get_paths(nodes, setToReturn=set()):
         else:
             for name in node.names:
                 setToReturn.add(find_module(name.name))
-    return set(filter(filter_imports, setToReturn)) 
+    
+    return set(filter(filter_imports, setToReturn))

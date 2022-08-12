@@ -1,10 +1,10 @@
 import json
 
 CONFIG = json.loads(
-    open('sherlock/config.json', 'r').read()
+    open('sherlock/resources/config.json', 'r').read()
 )
 
-def getConfig(section='', key=None, default=None):
+def get_config(section='', key=None, default=None):
 
     sectionPath = section.split('.')
     val = CONFIG
@@ -20,4 +20,4 @@ def getConfig(section='', key=None, default=None):
 
 
 if __name__ == '__main__':
-    print(getConfig('storage', 'log_file', 'returnDefaultValue'))
+    print(get_config('storage', 'log_file', 'returnDefaultValue'))

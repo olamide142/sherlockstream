@@ -34,7 +34,6 @@ def sherlock_unhalt(entryFile):
 
 
 def recover_original(files):
-    print('[+] Recovering Original Files')
     for file in files:
         if os.path.isfile(file+'.ssb'):
             os.rename(file+'.ssb', file)
@@ -47,10 +46,11 @@ def hard_recover(directory):
     for i in os.listdir(directory):
         full_path = os.path.join(directory, i)
 
-        if os.isdir(full_path):
+        if os.path.isdir(full_path):
             hard_recover(full_path)
         elif full_path.endswith('.py.ssb'):
             os.rename(full_path, full_path[0:-4])
+            print(f"Recovered {full_path}")
 
 
 def add_neighbours(current_file, unparsed_files, parsed_files):

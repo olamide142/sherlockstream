@@ -6,7 +6,7 @@ import atexit
 from sherlock.import_decoder import get_paths
 from sherlock.transformer import convert_file_to_ast, function_decorator
 from sherlock.utils import backup_original, get_full_path, sherlock_unhalt,\
-     recover_original, add_neighbours
+     recover_original, add_neighbours, hard_recover
 
 """
 export PYTHONPATH="${PYTHONPATH}:/home/victor/workspace/sherlockstream"
@@ -14,10 +14,13 @@ export PYTHONPATH="${PYTHONPATH}:/home/victor/workspace/sherlockstream"
 
 class _SherlockStream:
     '''Calling Sherlock Stream from source code'''
+
     def __init__(self, entry_file=None):
+        hard_recover('.')
         self.entry_file = entry_file
         self.parsed_files = set()
         self.unparsed_files = set()
+        self.decorated_count = {'files':0, 'functions':0}
         atexit.register(self.clean_up)
         self.main(self.entry_file)
 
@@ -33,7 +36,6 @@ class _SherlockStream:
 
         while len(self.unparsed_files) > 0:
 
-            print(len(self.unparsed_files))
             current_file = self.unparsed_files.pop()
 
             if current_file.endswith('__init__.py'):
@@ -47,14 +49,19 @@ class _SherlockStream:
             else: continue
 
             backup_original(current_file)
-            function_decorator(current_file)
+            self.decorated_count['functions'] += function_decorator(current_file)
             self.parsed_files.add(current_file)
-        
+
+        self.decorated_count['files'] = len(self.parsed_files)
         #to avoid getting stuck in a recursion
         sherlock_unhalt(entry_file)
+        print(f"Decorated {self.decorated_count.get('functions')} functions")
+        print(f"Decorated {self.decorated_count.get('files')} files")
 
         os.system(" ".join(sys.argv))
-
+        sys.exit()
         
 if __name__ == '__main__':
-    _SherlockStream(sys.argv[0])
+    # _SherlockStream(sys.argv[0])
+    from sherlock.utils import hard_recover
+    hard_recover('.')

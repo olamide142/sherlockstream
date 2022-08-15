@@ -5,3 +5,4 @@ output.txt
 *.log
 *.db
 sherlock_db*
+log.txt

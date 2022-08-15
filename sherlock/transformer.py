@@ -3,10 +3,10 @@ import ast
 import inspect
 import functools
 
-from sherlock.sherlock_data.persistence import Log2DB, DBFormatter
 from sherlock.utils import generateUuid
 from sherlock.net.dispatcher import Dispatcher
 
+dispatcher = Dispatcher()
 
 def convert_file_to_ast(file_path):
     return ast.parse(open(file_path, 'r').read())
@@ -18,10 +18,7 @@ def sherlock_yellow(func):
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        dispatcher = Dispatcher.instance()
-        _ = dispatcher.write(func.__name__)
-        # TODO:Get all the info needed and pass 
-        # info to sherlock server here
+        dispatcher.write(str(func.__name__))
         return func(*args, **kwargs)
     return wrapper
 
@@ -61,9 +58,6 @@ def function_decorator(source_file):
 
         for line in ccode:
 
-            # if line.strip().startswith('@') and not seen:
-            #     seen = True
-            #     f.write(indent_and_add(line))
             if line.strip().startswith(('def ', 'async def ')):
                 f.write(indent_and_add(line))
 

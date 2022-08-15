@@ -1,2 +1,5 @@
 flask
 pyzmq
+python-socketio[client]
+eventlet
+gevent

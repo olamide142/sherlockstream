@@ -16,7 +16,6 @@ class _SherlockStream:
     '''Calling Sherlock Stream from source code'''
 
     def __init__(self, entry_file=None):
-        hard_recover('.')
         self.entry_file = entry_file
         self.parsed_files = set()
         self.unparsed_files = set()
@@ -58,8 +57,7 @@ class _SherlockStream:
         print(f"Decorated {self.decorated_count.get('functions')} functions")
         print(f"Decorated {self.decorated_count.get('files')} files")
 
-        os.system(" ".join(sys.argv))
-        sys.exit()
+        sys.exit(os.system(" ".join(sys.argv)))
         
 if __name__ == '__main__':
     # _SherlockStream(sys.argv[0])

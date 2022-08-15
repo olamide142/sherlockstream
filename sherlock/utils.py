@@ -51,6 +51,7 @@ def hard_recover(directory):
         elif full_path.endswith('.py.ssb'):
             os.rename(full_path, full_path[0:-4])
             print(f"Recovered {full_path}")
+    __import__('sys').exit(0)
 
 
 def add_neighbours(current_file, unparsed_files, parsed_files):

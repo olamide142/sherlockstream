@@ -1,5 +1,6 @@
 flask
 pyzmq
+flask-socketio
 python-socketio[client]
 eventlet
 gevent

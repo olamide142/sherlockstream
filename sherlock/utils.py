@@ -2,12 +2,28 @@ import os
 import uuid
 import time
 import shutil
-import logging
+import ast
 
 from .import_decoder import is_python
 
 def generateUuid():
     return "".join(str(uuid.uuid4()).split('-'))
+
+
+def function_finder(code_string):
+    """get function line number and colum offsets"""
+    results = []
+    code_ast = ast.parse(code_string)
+
+    for node in ast.walk(code_ast):
+        if isinstance(node, ast.FunctionDef):
+            results.append({'name':node.name,
+                  'column_offset': node.col_offset,
+                  'line_number': node.lineno
+                })
+            
+    return results
+
 
 def backup_original(original):
     shutil.copyfile(original, original+'.ssb') #ssb: sherlock stream backup
@@ -49,8 +65,9 @@ def hard_recover(directory):
         if os.path.isdir(full_path):
             hard_recover(full_path)
         elif full_path.endswith('.py.ssb'):
-            os.rename(full_path, full_path[0:-4])
-            print(f"Recovered {full_path}")
+            if not "/home/lams/workspace/flask/venv/lib/python3.10/site-packages/markupsafe/__init__.py" in full_path:
+                os.rename(full_path, full_path[0:-4])
+                print(f"Recovered {full_path}")
     __import__('sys').exit(0)
 
 

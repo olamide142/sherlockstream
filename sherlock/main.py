@@ -9,7 +9,7 @@ from sherlock.utils import backup_original, get_full_path, sherlock_unhalt,\
      recover_original, add_neighbours, hard_recover
 
 """
-export PYTHONPATH="${PYTHONPATH}:/home/victor/workspace/sherlockstream"
+export PYTHONPATH="${PYTHONPATH}:/home/lams/workspace/sherlockstream"
 """
 
 class _SherlockStream:
@@ -56,10 +56,9 @@ class _SherlockStream:
         sherlock_unhalt(entry_file)
         print(f"Decorated {self.decorated_count.get('functions')} functions")
         print(f"Decorated {self.decorated_count.get('files')} files")
-
-        sys.exit(os.system(" ".join(sys.argv)))
+        
+        os.system(" ".join(sys.argv))
         
 if __name__ == '__main__':
-    # _SherlockStream(sys.argv[0])
     from sherlock.utils import hard_recover
-    hard_recover('.')
+    hard_recover(os.getcwd())

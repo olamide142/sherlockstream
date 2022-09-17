@@ -19,7 +19,7 @@ def filter_imports(path):
 
     return path and all([
         is_python(path),
-        '/usr/lib/' not in path,
+        '/usr/lib/' not in path, #avoid debgging python stdlib modules
         '/sherlockstream/sherlock' not in path,
         # '/venv/' not in path
     ])

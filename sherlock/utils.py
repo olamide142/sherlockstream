@@ -1,10 +1,11 @@
 import os
+from __future__ import annotations
 import uuid
 import time
 import shutil
 import ast
 
-from .import_decoder import is_python
+from sherlock.import_decoder import is_python
 
 def generateUuid():
     return "".join(str(uuid.uuid4()).split('-'))
@@ -23,6 +24,16 @@ def function_finder(code_string):
                 })
             
     return results
+
+
+def module_has_future(code_string):
+    """python module contains a __future__ module or not"""
+    for node in ast.walk(ast.parse(code_string)):
+        if isinstance(node, (ast.Import, ast.ImportFrom)) and \
+            "__future__" in ast.dump(node):
+            breakpoint()
+            return True
+    return False
 
 
 def backup_original(original):

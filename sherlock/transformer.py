@@ -1,9 +1,9 @@
+from __future__ import annotations
 '''Transform/Modiify a python ast node'''
 import ast
 import inspect
 import functools
-
-from sherlock.utils import function_finder
+from sherlock.utils import function_finder, module_has_future
 # from sherlock.net.dispatcher import Dispatcher
 
 # dispatcher = Dispatcher()
@@ -43,19 +43,34 @@ def function_decorator(source_file):
 
     decorated = 0 #number of decorated functions in a file
     code_string = ""
-    marker_import = "from sherlock.transformer import sherlock_yellow\n"
 
     with open(source_file, 'r') as f:
         code_string = f.read()
 
+    marker_import = "from sherlock.transformer import sherlock_yellow\n"
     functions = function_finder(code_string)
-
+    has_future = module_has_future(code_string)
+    marker_imported = False
+    first_import_line = 0
     if len(functions):
             
         with open(source_file, 'w') as f:
-            f.write(marker_import)
 
             for index, line in enumerate(code_string.split('\n'), start=1):
+                # if file uses the __future__ module, 
+                # import yellow_marker on the next line
+                    
+                if all([
+                        len(functions), 
+                        (not has_future), 
+                        (not marker_imported)
+                    ]):
+                    f.write(marker_import)
+                    marker_imported = True
+                elif has_future and index > first_import_line:
+                    f.write(marker_import)
+                    marker_imported = True
+
                 function = functions[0] if len(functions) else 0
 
                 if function and (index == function.get('line_number')):
@@ -65,6 +80,6 @@ def function_decorator(source_file):
                     decorated += 1
                     
                 f.write(f"{line}\n")    
-
+                
     return decorated
 

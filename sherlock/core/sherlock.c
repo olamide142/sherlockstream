@@ -1,26 +1,23 @@
-#include <time.h>
-double My_variable = 3.0;
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
 
-int fact(int n)
+long get_pyobject(PyObject *list)
 {
-    if (n <= 1)
-    {
-        return 1;
+    Py_ssize_t i, n;
+    long total = 0, value;
+    PyObject *item;
+
+    n = PyList_Size(list);
+    if (n < 0)
+        return -1; /* Not a list */
+    for (i = 0; i < n; i++) {
+        item = PyList_GetItem(list, i); /* Can't fail */
+        if (!PyLong_Check(item)) continue; /* Skip non-integers */
+        value = PyLong_AsLong(item);
+        if (value == -1 && PyErr_Occurred())
+            /* Integer too big to fit in a C long, bail out */
+            return -1;
+        total += value;
     }
-    else
-    {
-        return n * fact(n - 1);
-    }
-}
-
-int my_mod(int x, int y)
-{
-    return (x % y);
-}
-
-char *get_time()
-{
-    time_t ltime;
-    time(&ltime);
-    return ctime(&ltime);
+    return total;
 }

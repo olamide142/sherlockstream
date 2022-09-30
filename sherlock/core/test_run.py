@@ -11,6 +11,6 @@ lib_sherlock = ctypes.CDLL('./_sherlock.so')
 
 print(
     lib_sherlock.get_pyobject(
-        ctypes.py_object([1,2,3,4])
+        ctypes.py_object([1,2,5,3,4])
     )
 )
